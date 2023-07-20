@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive To-Do List and Random Notes</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="flex-container" style="display:none;">
+    <div class="container" id="todoContainer">
+      <h1>To-Do List</h1>
+      <input type="text" id="taskInput" placeholder="Enter a task...">
+      <button id="addButton">Add</button>
+      <ul id="taskList">
+        <!-- Tasks will be dynamically added here -->
+      </ul>
+    </div>
+
+    <div class="container" id="noteContainer">
+      <h1>Random Notes</h1>
+      <textarea id="notesInput" placeholder="Enter a random note..."></textarea>
+      <button id="addNoteButton">Add Note</button>
+      <ul id="notesList">
+        <!-- Notes will be dynamically added here -->
+      </ul>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.flex-container {
+  display: flex; /* Added to make the containers side by side */
+}
+
+.container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1; /* Added to make both containers equal size */
+  margin: 0 10px; /* Added some margin for separation */
+}
+
+h1 {
+  text-align: center;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  word-wrap: break-word; /* Added to wrap text to the next line */
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  position: relative;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  transition: opacity 0.2s;
+}
+
+li:last-child {
+  border-bottom: none;
+}
+
+li:hover {
+  opacity: 0.7;
+}
+
+.completed {
+  text-decoration: line-through;
+}
+
+/* Styling for the trash icon */
+.trash-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+/* Styles for the loading overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Ensure it's on top of other content */
+}
+
+.spinner {
+  border: 5px solid rgba(76, 175, 80, 0.3);
+  border-top: 5px solid #4CAF50;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+/* Animation for the spinner */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+
+<script>
+const addButton = document.getElementById('addButton');
+const taskInput = document.getElementById('taskInput');
+const taskList = document.getElementById('taskList');
+
+const addNoteButton = document.getElementById('addNoteButton');
+const notesInput = document.getElementById('notesInput');
+const notesList = document.getElementById('notesList');
+
+addButton.addEventListener('click', () => {
+  const taskText = taskInput.value.trim();
+  if (taskText !== '') {
+    const listItem = document.createElement('li');
+    listItem.textContent = taskText;
+
+    // Create trash icon for tasks
+    const trashIcon = document.createElement('span');
+    trashIcon.innerHTML = "&#128465;"; // Unicode for trash icon
+    trashIcon.classList.add('trash-icon');
+    listItem.appendChild(trashIcon);
+
+    taskList.appendChild(listItem);
+    taskInput.value = '';
+
+    listItem.addEventListener('click', () => {
+      listItem.classList.toggle('completed');
+    });
+
+    trashIcon.addEventListener('click', (event) => {
+      event.stopPropagation();
+      taskList.removeChild(listItem);
+    });
+  }
+});
+
+addNoteButton.addEventListener('click', () => {
+  const noteText = notesInput.value.trim();
+  if (noteText !== '') {
+    const listItem = document.createElement('li');
+    listItem.textContent = noteText;
+
+    // Create trash icon for notes
+    const trashIcon = document.createElement('span');
+    trashIcon.innerHTML = "&#128465;"; // Unicode for trash icon
+    trashIcon.classList.add('trash-icon');
+    listItem.appendChild(trashIcon);
+
+    notesList.appendChild(listItem);
+    notesInput.value = '';
+
+    trashIcon.addEventListener('click', (event) => {
+      event.stopPropagation();
+      notesList.removeChild(listItem);
+    });
+  }
+});
+
+// Add event listener to remove the loading overlay after 3 seconds
+window.addEventListener('load', () => {
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  setTimeout(() => {
+    loadingOverlay.style.display = 'none';
+    // Show the containers after loading
+    document.querySelector('.flex-container').style.display = 'flex';
+  }, 3000); // 3 seconds
+});
+</script>
