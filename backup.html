@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive To-Do List and Random Notes</title>
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.flex-container {
+  display: flex;
+}
+
+.container {
+  position: relative;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  margin: 0 10px;
+}
+
+h1 {
+  text-align: center;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  word-wrap: break-word;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  position: relative;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  transition: opacity 0.2s, transform 0.3s;
+}
+
+li.clicked {
+  transform: translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+li:last-child {
+  border-bottom: none;
+}
+
+li:hover {
+  opacity: 0.7;
+}
+
+.completed {
+  text-decoration: line-through;
+}
+
+.trash-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.restore-box-button {
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 10px 20px;
+  margin-right: 10px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.spinner {
+  border: 5px solid rgba(76, 175, 80, 0.3);
+  border-top: 5px solid #4CAF50;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-button {
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 0 5px;
+}
+
+.restore-button {
+  position: fixed;
+  bottom: 20px;
+  right: 80px;
+  background-color: #fff;
+  color: #000;
+  border: 2px solid #000;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 9999;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup h2 {
+  margin-bottom: 10px;
+}
+
+.popup button {
+  margin-top: 10px;
+}
+
+.hidden {
+  display: none;
+}
+
+  </style>
+</head>
+
+<body>
+  <div class="overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="flex-container" style="display:none;">
+    <div class="container" id="todoContainer">
+      <div class="box-header">
+        <h1>To-Do List</h1>
+        <span class="close-button" id="closeTodoButton">&#10006;</span>
+      </div>
+      <input type="text" id="taskInput" placeholder="Enter a task...">
+      <button id="addButton">Add</button>
+      <ul id="taskList">
+        <!-- Incomplete tasks will be dynamically added here -->
+      </ul>
+      <ul id="completedList">
+        <!-- Completed tasks will be dynamically added here -->
+      </ul>
+    </div>
+
+    <div class="container" id="noteContainer">
+      <div class="box-header">
+        <h1>Random Notes</h1>
+        <span class="close-button" id="closeNoteButton">&#10006;</span>
+      </div>
+      <textarea id="notesInput" placeholder="Enter a random note..."></textarea>
+      <button id="addNoteButton">Add Note</button>
+      <ul id="notesList">
+        <!-- Notes will be dynamically added here -->
+      </ul>
+    </div>
+  </div>
+
+  <div class="restore-button" id="restoreButton">&#43;</div>
+
+  <div class="popup hidden" id="loadSavePopup">
+    <h2>Load/Save List</h2>
+    <button class="restore-box-button" id="restoreBoxButton">Restore Boxes</button>
+    <button id="saveButton">Save</button>
+    <button id="loadButton">Load</button>
+  </div>
+
+  <div class="popup hidden" id="savePopup">
+    <h2>Save List</h2>
+    <textarea id="dataInput" placeholder="Your saved data will appear here..." readonly></textarea>
+    <button id="saveDataButton">Save to Clipboard</button>
+  </div>
+
+  <div class="popup hidden" id="loadPopup">
+    <h2>Load List</h2>
+    <textarea id="dataOutput" placeholder="Paste saved data here..."></textarea>
+    <button id="loadDataButton">Load</button>
+  </div>
+
+  <script>
+    
+    const addButton = document.getElementById('addButton');
+    const taskInput = document.getElementById('taskInput');
+    const taskList = document.getElementById('taskList');
+    const completedList = document.getElementById('completedList');
+
+    const addNoteButton = document.getElementById('addNoteButton');
+    const notesInput = document.getElementById('notesInput');
+    const notesList = document.getElementById('notesList');
+
+    const todoContainer = document.getElementById('todoContainer');
+    const noteContainer = document.getElementById('noteContainer');
+
+    const closeTodoButton = document.getElementById('closeTodoButton');
+    const closeNoteButton = document.getElementById('closeNoteButton');
+
+    const restoreButton = document.getElementById('restoreButton');
+    const loadSavePopup = document.getElementById('loadSavePopup');
+    const saveButton = document.getElementById('saveButton');
+    const loadButton = document.getElementById('loadButton');
+    const savePopup = document.getElementById('savePopup');
+    const dataInput = document.getElementById('dataInput');
+    const saveDataButton = document.getElementById('saveDataButton');
+    const loadPopup = document.getElementById('loadPopup');
+    const dataOutput = document.getElementById('dataOutput');
+    const loadDataButton = document.getElementById('loadDataButton');
+
+    let deletedContainers = [];
+
+    restoreButton.addEventListener('click', () => {
+      loadSavePopup.classList.remove('hidden');
+    });
+
+    addButton.addEventListener('click', () => {
+      const taskText = taskInput.value.trim();
+      if (taskText !== '') {
+        const listItem = document.createElement('li');
+        listItem.textContent = taskText;
+
+        const trashIcon = document.createElement('span');
+        trashIcon.innerHTML = "&#128465;";
+        trashIcon.classList.add('trash-icon');
+        listItem.appendChild(trashIcon);
+
+        taskList.appendChild(listItem);
+
+        taskInput.value = '';
+
+        listItem.addEventListener('click', () => {
+          listItem.classList.toggle('completed');
+
+          if (listItem.classList.contains('completed')) {
+            // Move the completed item to the completed container
+            completedList.appendChild(listItem);
+          } else {
+            // Move the incomplete item back to the taskList container
+            taskList.appendChild(listItem);
+          }
+        });
+
+        trashIcon.addEventListener('click', (event) => {
+          event.stopPropagation();
+          taskList.removeChild(listItem);
+          completedList.removeChild(listItem); // Also remove from completedList if deleted
+        });
+      }
+    });
+
+    addNoteButton.addEventListener('click', () => {
+      const noteText = notesInput.value.trim();
+      if (noteText !== '') {
+        const listItem = document.createElement('li');
+        listItem.textContent = noteText;
+
+        const trashIcon = document.createElement('span');
+        trashIcon.innerHTML = "&#128465;";
+        trashIcon.classList.add('trash-icon');
+        listItem.appendChild(trashIcon);
+
+        notesList.appendChild(listItem);
+        notesInput.value = '';
+
+        trashIcon.addEventListener('click', (event) => {
+          event.stopPropagation();
+          notesList.removeChild(listItem);
+        });
+      }
+    });
+
+    window.addEventListener('load', () => {
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      setTimeout(() => {
+        loadingOverlay.style.display = 'none';
+        // Show the containers after loading
+        document.querySelector('.flex-container').style.display = 'flex';
+      }, 3000); // 3 seconds
+    });
+
+    closeTodoButton.addEventListener('click', () => {
+      deletedContainers.push(todoContainer);
+      todoContainer.style.display = 'none';
+    });
+
+    closeNoteButton.addEventListener('click', () => {
+      deletedContainers.push(noteContainer);
+      noteContainer.style.display = 'none';
+    });
+
+    loadButton.addEventListener('click', () => {
+      loadSavePopup.classList.add('hidden');
+      loadPopup.classList.remove('hidden');
+    });
+
+    saveButton.addEventListener('click', () => {
+      loadSavePopup.classList.add('hidden');
+      savePopup.classList.remove('hidden');
+
+      const todoItems = Array.from(taskList.children).map(item => {
+        const taskText = item.textContent.replace(/🗑️/g, '').trim();
+        return taskText;
+      }).join('\n');
+
+      const noteItems = Array.from(notesList.children).map(item => {
+        const noteText = item.textContent.replace(/🗑️/g, '').trim();
+        return noteText;
+      }).join('\n');
+
+      const dataToSave = todoItems + '\n\n' + noteItems;
+      dataInput.value = dataToSave;
+    });
+
+    saveDataButton.addEventListener('click', () => {
+      savePopup.classList.add('hidden');
+
+      // Save the data to clipboard
+      dataInput.select();
+      document.execCommand('copy');
+    });
+
+    loadDataButton.addEventListener('click', () => {
+      loadPopup.classList.add('hidden');
+      const dataToLoad = dataOutput.value.trim();
+      const [todoData, noteData] = dataToLoad.split('\n\n');
+
+      taskList.innerHTML = '';
+      const todoItems = todoData.split('\n');
+      todoItems.forEach(todo => {
+        const listItem = document.createElement('li');
+        listItem.textContent = todo;
+        const trashIcon = document.createElement('span');
+        trashIcon.innerHTML = "&#128465;";
+        trashIcon.classList.add('trash-icon');
+        listItem.appendChild(trashIcon);
+        taskList.appendChild(listItem);
+
+        listItem.addEventListener('click', () => {
+          listItem.classList.toggle('completed');
+
+          if (listItem.classList.contains('completed')) {
+            // Move the completed item to the completed container
+            completedList.appendChild(listItem);
+          } else {
+            // Move the incomplete item back to its original position
+            const allItems = Array.from(completedList.children);
+            const currentIndex = allItems.indexOf(listItem);
+            if (currentIndex !== allItems.length - 1) {
+              completedList.removeChild(listItem);
+              completedList.insertBefore(listItem, allItems[currentIndex + 1]);
+            } else {
+              completedList.removeChild(listItem);
+              completedList.appendChild(listItem);
+            }
+          }
+        });
+
+        trashIcon.addEventListener('click', (event) => {
+          event.stopPropagation();
+          taskList.removeChild(listItem);
+          completedList.removeChild(listItem); // Also remove from completedList if deleted
+        });
+      });
+
+      notesList.innerHTML = '';
+      const noteItems = noteData.split('\n');
+      noteItems.forEach(note => {
+        const listItem = document.createElement('li');
+        listItem.textContent = note;
+        const trashIcon = document.createElement('span');
+        trashIcon.innerHTML = "&#128465;";
+        trashIcon.classList.add('trash-icon');
+        listItem.appendChild(trashIcon);
+        notesList.appendChild(listItem);
+
+        trashIcon.addEventListener('click', (event) => {
+          event.stopPropagation();
+          notesList.removeChild(listItem);
+        });
+      });
+    });
+
+    // New Restore Box functionality
+    restoreBoxButton.addEventListener('click', () => {
+     if (deletedContainers.length > 0) {
+       const container = deletedContainers.pop();
+        container.style.display = 'block';
+     }
+    });
+
+    loadSavePopup.insertBefore(restoreBoxButton, saveButton);
+
+  </script>
+
+</body>
+
+</html>  
