@@ -132,8 +132,9 @@ saveDataButton.addEventListener('click', () => {
   savePopup.classList.add('hidden');
 
   const dataInput = document.getElementById('dataInput');
-  // Use the Clipboard API to copy the selected content to the clipboard
-  navigator.clipboard.writeText(dataInput.value);
+
+// Use the Clipboard API to copy the selected content to the clipboard
+  navigator.clipboard.writeText(dataInput.value)
 });
 
 loadDataButton.addEventListener('click', () => {
@@ -199,9 +200,11 @@ loadDataButton.addEventListener('click', () => {
 
 // New Restore Box functionality
 restoreBoxButton.addEventListener('click', () => {
-  if (deletedContainers.length > 0) {
-    loadSavePopup.classList.add('hidden');
-    const container = deletedContainers.pop();
+ if (deletedContainers.length > 0) {
+   loadSavePopup.classList.add('hidden');
+   const container = deletedContainers.pop();
     container.style.display = 'block';
-  }
+ }
 });
+
+loadSavePopup.insertBefore(restoreBoxButton, saveButton);

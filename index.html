@@ -1,11 +1,202 @@
-<!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interactive To-Do List and Random Notes</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.flex-container {
+  display: flex;
+}
+
+.container {
+  position: relative;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  margin: 0 10px;
+}
+
+h1 {
+  text-align: center;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  word-wrap: break-word;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  position: relative;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  transition: opacity 0.2s, transform 0.3s;
+}
+
+li.clicked {
+  transform: translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+li:last-child {
+  border-bottom: none;
+}
+
+li:hover {
+  opacity: 0.7;
+}
+
+.completed {
+  text-decoration: line-through;
+}
+
+.trash-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.restore-box-button {
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 10px 20px;
+  margin-right: 10px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.spinner {
+  border: 5px solid rgba(76, 175, 80, 0.3);
+  border-top: 5px solid #4CAF50;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-button {
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 0 5px;
+}
+
+.restore-button {
+  position: fixed;
+  bottom: 20px;
+  right: 80px;
+  background-color: #fff;
+  color: #000;
+  border: 2px solid #000;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 9999;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup h2 {
+  margin-bottom: 10px;
+}
+
+.popup button {
+  margin-top: 10px;
+}
+
+.hidden {
+  display: none;
+}
+
+  </style>
 </head>
+
 <body>
   <div class="overlay" id="loadingOverlay">
     <div class="spinner"></div>
@@ -13,28 +204,153 @@
 
   <div class="flex-container" style="display:none;">
     <div class="container" id="todoContainer">
-      <!-- To-Do List content -->
+      <div class="box-header">
+        <h1>To-Do List</h1>
+        <span class="close-button" id="closeTodoButton">&#10006;</span>
+      </div>
+      <input type="text" id="taskInput" placeholder="Enter a task...">
+      <button id="addButton">Add</button>
+      <ul id="taskList">
+        <!-- Incomplete tasks will be dynamically added here -->
+      </ul>
+      <ul id="completedList">
+        <!-- Completed tasks will be dynamically added here -->
+      </ul>
     </div>
 
     <div class="container" id="noteContainer">
-      <!-- Random Notes content -->
+      <div class="box-header">
+        <h1>Random Notes</h1>
+        <span class="close-button" id="closeNoteButton">&#10006;</span>
+      </div>
+      <textarea id="notesInput" placeholder="Enter a random note..."></textarea>
+      <button id="addNoteButton">Add Note</button>
+      <ul id="notesList">
+        <!-- Notes will be dynamically added here -->
+      </ul>
     </div>
   </div>
 
   <div class="restore-button" id="restoreButton">&#43;</div>
 
   <div class="popup hidden" id="loadSavePopup">
-    <!-- Load/Save List popup content -->
+    <h2>Load/Save List</h2>
+    <button class="restore-box-button" id="restoreBoxButton">Restore Boxes</button>
+    <button id="saveButton">Save</button>
+    <button id="loadButton">Load</button>
   </div>
 
   <div class="popup hidden" id="savePopup">
-    <!-- Save List popup content -->
+    <h2>Save List</h2>
+    <textarea id="dataInput" placeholder="Your saved data will appear here..." readonly></textarea>
+    <button id="saveDataButton">Save to Clipboard</button>
   </div>
 
   <div class="popup hidden" id="loadPopup">
-    <!-- Load List popup content -->
+    <h2>Load List</h2>
+    <textarea id="dataOutput" placeholder="Paste saved data here..."></textarea>
+    <button id="loadDataButton">Load</button>
   </div>
 
   <script src="script.js"></script>
+  <script>
+    // Function to save the data to localStorage
+    function saveDataToLocalStorage() {
+      const todoItems = Array.from(taskList.children).map((item) => {
+        const taskText = item.textContent.replace('🗑', '').trim();
+        return taskText;
+      });
+  
+      const noteItems = Array.from(notesList.children).map((item) => {
+        const noteText = item.textContent.replace('🗑', '').trim();
+        return noteText;
+      });
+  
+      const dataToSave = JSON.stringify({ todoItems, noteItems });
+      localStorage.setItem('todo_notes_data', dataToSave);
+    }
+  
+    // Function to load the data from localStorage and populate the lists
+    function loadDataFromLocalStorage() {
+      const dataToLoad = localStorage.getItem('todo_notes_data');
+      if (dataToLoad) {
+        const { todoItems, noteItems } = JSON.parse(dataToLoad);
+  
+        taskList.innerHTML = '';
+        todoItems.forEach((todo) => {
+          const listItem = document.createElement('li');
+          listItem.textContent = todo;
+          const trashIcon = document.createElement('span');
+          trashIcon.innerHTML = '&#128465;';
+          trashIcon.classList.add('trash-icon');
+          listItem.appendChild(trashIcon);
+          taskList.appendChild(listItem);
+  
+          listItem.addEventListener('click', () => {
+            listItem.classList.toggle('completed');
+  
+            if (listItem.classList.contains('completed')) {
+              // Move the completed item to the completed container
+              completedList.appendChild(listItem);
+            } else {
+              // Move the incomplete item back to its original position
+              const allItems = Array.from(completedList.children);
+              const currentIndex = allItems.indexOf(listItem);
+              if (currentIndex !== allItems.length - 1) {
+                completedList.removeChild(listItem);
+                completedList.insertBefore(listItem, allItems[currentIndex + 1]);
+              } else {
+                completedList.removeChild(listItem);
+                completedList.appendChild(listItem);
+              }
+            }
+            // Save the updated data to localStorage
+            saveDataToLocalStorage();
+          });
+  
+          trashIcon.addEventListener('click', (event) => {
+            event.stopPropagation();
+            taskList.removeChild(listItem);
+            completedList.removeChild(listItem); // Also remove from completedList if deleted
+            // Save the updated data to localStorage
+            saveDataToLocalStorage();
+          });
+        });
+  
+        notesList.innerHTML = '';
+        noteItems.forEach((note) => {
+          const listItem = document.createElement('li');
+          listItem.textContent = note;
+          const trashIcon = document.createElement('span');
+          trashIcon.innerHTML = '&#128465;';
+          trashIcon.classList.add('trash-icon');
+          listItem.appendChild(trashIcon);
+          notesList.appendChild(listItem);
+  
+          trashIcon.addEventListener('click', (event) => {
+            event.stopPropagation();
+            notesList.removeChild(listItem);
+            // Save the updated data to localStorage
+            saveDataToLocalStorage();
+          });
+        });
+      }
+    }
+  
+    // Call the load function on page load to restore the data if available
+    window.addEventListener('load', () => {
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      setTimeout(() => {
+        loadingOverlay.style.display = 'none';
+        // Show the containers after loading
+        document.querySelector('.flex-container').style.display = 'flex';
+        // Load the data from localStorage and populate the lists
+        loadDataFromLocalStorage();
+      }, 3000); // 3 seconds
+    });
+  
+    // Rest of your existing JavaScript code remains the same
+  
+    // ...
+  </script>
 </body>
-</html>
