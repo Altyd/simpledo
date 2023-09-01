@@ -137,7 +137,5 @@ The saveDataButton event listener hides the save popup and uses the Clipboard AP
 The SimpleDo To-Do List App was created with contributions from the following individuals:
 
 - [Franco](https://github.com/Altyd)
-- [Jesse](https://github.com/Altyd)
-- [Yentl](https://github.com/Altyd)
 
 Thank you to these contributors for their efforts in making the SimpleDo app a reality!
