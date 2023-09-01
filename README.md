@@ -9,7 +9,8 @@ Welcome to the SimpleDo To-Do List App! This README provides an overview of the 
 3. [Code Explanation](#CodeExplanation)
 4. [Adding Task And Notes](#AddingTasksandNotes)
 5. [Task Completion and Removal](#TaskCompletionandRemoval)
-6. [Contributors](#Contributors)
+6. [Data Loading and Saving](#DataLoadingandSaving)
+7. [Contributors](#Contributors)
 
 ## Features
 
@@ -87,7 +88,7 @@ trashIcon.addEventListener('click', (event) => {
 
 The event listener for a list item's click toggles its completion status and moves it between the main to-do list (taskList) and the completed tasks list (completedList). The trash icon event listener allows users to remove tasks from both lists.
 
-### Data Loading and Saving
+### DataLoadingandSaving
 
   ```shell
 saveDataButton.addEventListener('click', () => {
@@ -137,5 +138,3 @@ The saveDataButton event listener hides the save popup and uses the Clipboard AP
 The SimpleDo To-Do List App was created with contributions from the following individuals:
 
 - [Franco](https://github.com/Altyd)
-
-Thank you to these contributors for their efforts in making the SimpleDo app a reality!
