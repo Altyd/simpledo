@@ -4,29 +4,29 @@ Welcome to the SimpleDo To-Do List App! This README provides an overview of the 
 
 # Table of contents
 
-1. [Features](#Authentication)
-2. [Main Features](#MainFeatures)
-3. [Code Explanation](#CodeExplanation)
-4. [Adding Task And Notes](#AddingTasksandNotes)
-5. [Task Completion and Removal](#TaskCompletionandRemoval)
-6. [Data Loading and Saving](#DataLoadingandSaving)
+1. [Features](#Features)
+2. [Main Features](#Main Features)
+3. [Code Explanation](#Code Explanation)
+4. [Adding Task And Notes](#Adding Tasks andNotes)
+5. [Task Completion and Removal](#Task Completion and Removal)
+6. [Data Loading and Saving](#Data Loading and Saving)
 7. [Contributors](#Contributors)
 
 ## Features
 
 SimpleDo is a super simplistic to-do list app that focuses on basic animations and ease of use. It aims to provide a straightforward interface for managing tasks and notes without overcomplicating the process.
 
-### MainFeatures
+### Main Features
 
 - To-Do List: Manage your tasks with ease by adding, marking as completed, and removing tasks from the list.
 - Notes: Keep track of important notes by adding, viewing, and removing them from the notes list.
 - Close Boxes: The app provides the ability to close the to-do list and notes sections for a clutter-free workspace.
 
-## CodeExplanation
+## Code Explanation
 
 The code provided implements the functionality of the SimpleDo app. Let's take a look at some key parts of the code and how they contribute to the app's functionality:
 
-### AddingTasksandNotes
+### Adding Tasks and Notes
 
   ```shell
 addButton.addEventListener('click', () => {
@@ -65,7 +65,7 @@ addNoteButton.addEventListener('click', () => {
 
 The code snippets above handle the addition of tasks and notes when the respective "Add" buttons are clicked. They create new list item elements containing the entered task/note text and a trash icon for removal. The list items are then appended to their corresponding lists (taskList or notesList).
 
-### TaskCompletionandRemoval
+### Task Completion and Removal
 
   ```shell
 listItem.addEventListener('click', () => {
@@ -88,7 +88,7 @@ trashIcon.addEventListener('click', (event) => {
 
 The event listener for a list item's click toggles its completion status and moves it between the main to-do list (taskList) and the completed tasks list (completedList). The trash icon event listener allows users to remove tasks from both lists.
 
-### DataLoadingandSaving
+### Data Loading and Saving
 
   ```shell
 saveDataButton.addEventListener('click', () => {
