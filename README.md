@@ -16,17 +16,17 @@ Welcome to the SimpleDo To-Do List App! This README provides an overview of the 
 
 SimpleDo is a super simplistic to-do list app that focuses on basic animations and ease of use. It aims to provide a straightforward interface for managing tasks and notes without overcomplicating the process.
 
-### Main Features
+### Main-Features
 
 - To-Do List: Manage your tasks with ease by adding, marking as completed, and removing tasks from the list.
 - Notes: Keep track of important notes by adding, viewing, and removing them from the notes list.
 - Close Boxes: The app provides the ability to close the to-do list and notes sections for a clutter-free workspace.
 
-## Code Explanation
+## Code-Explanation
 
 The code provided implements the functionality of the SimpleDo app. Let's take a look at some key parts of the code and how they contribute to the app's functionality:
 
-### Adding Tasks and Notes
+### Adding-Tasks-and-Notes
 
   ```shell
 addButton.addEventListener('click', () => {
@@ -65,7 +65,7 @@ addNoteButton.addEventListener('click', () => {
 
 The code snippets above handle the addition of tasks and notes when the respective "Add" buttons are clicked. They create new list item elements containing the entered task/note text and a trash icon for removal. The list items are then appended to their corresponding lists (taskList or notesList).
 
-### Task Completion and Removal
+### Task-Completion-and-Removal
 
   ```shell
 listItem.addEventListener('click', () => {
@@ -88,7 +88,7 @@ trashIcon.addEventListener('click', (event) => {
 
 The event listener for a list item's click toggles its completion status and moves it between the main to-do list (taskList) and the completed tasks list (completedList). The trash icon event listener allows users to remove tasks from both lists.
 
-### Data Loading and Saving
+### Data-Loading-and-Saving
 
   ```shell
 saveDataButton.addEventListener('click', () => {
