@@ -5,11 +5,11 @@ Welcome to the SimpleDo To-Do List App! This README provides an overview of the 
 # Table of contents
 
 1. [Features](#Features)
-2. [Main Features](#Main Features)
-3. [Code Explanation](#Code Explanation)
-4. [Adding Task And Notes](#Adding Tasks andNotes)
-5. [Task Completion and Removal](#Task Completion and Removal)
-6. [Data Loading and Saving](#Data Loading and Saving)
+2. [Main Features](#Main-Features)
+3. [Code Explanation](#Code-Explanation)
+4. [Adding Task And Notes](#Adding-Tasks-and-Notes)
+5. [Task Completion and Removal](#Task-Completion-and-Removal)
+6. [Data Loading and Saving](#Data-Loading-and-Saving)
 7. [Contributors](#Contributors)
 
 ## Features
